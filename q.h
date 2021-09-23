@@ -3,10 +3,12 @@
 
 
 // returns a pointer to the new q-element
-TCB_t* newItem(){
+TCB_t* newItem(int id){
 	TCB_t* newElement = (TCB_t*)malloc(sizeof(TCB_t));
 	newElement->prev = NULL;
 	newElement->next = NULL;
+	newElement->value = id;
+	//printf("%d\n", newElement->value);
 	return newElement;
 }
 
@@ -54,4 +56,15 @@ TCB_t* delQueue(TCB_t** head){
 // this is equivalent to addQ(&head, delQ(&head))
 void rotateQueue(TCB_t** head){
     addQueue(head, delQueue(head));
+}
+
+void printQ(TCB_t** head){
+	TCB_t* temp = *head;
+	int i = 0;
+	while(temp){
+		printf("%d : %p \n", i, temp);
+		temp = temp->next;
+		i++;
+	}
+	
 }

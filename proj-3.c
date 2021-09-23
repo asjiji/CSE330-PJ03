@@ -12,7 +12,7 @@
 // 	prints "if consumer X is consuming an item then print"
 // before yielding a producer
 
-#define N 1
+#define N 2
 Semaphore empty, full; // change
 int buffer[N]; // change
 int in = 0, out = 0, item = 0; // change
@@ -23,19 +23,23 @@ int in = 0, out = 0, item = 0; // change
 void producer(int id){
 	int local = 1;
 	while(local <= N){
+        //printf("producer %d while loop %d\n",id, local );
         int p = P(&empty);
+        //yield();
 		if(p == 0){
             printf("Producer %d is waiting\n", id);
+            
         }else{
-            buffer[in] = item++;
+            buffer[in] = id;
             in = (in+1)%N;
             
             printf("Producer %d is producing item number %d\n", id, local);
             	
            // yield();
         }
-		V(&full);
         local++;
+		V(&full);
+        
 		
 	}
 	return;	
@@ -45,8 +49,11 @@ void producer(int id){
 void consumer(int id){
 	int local = 1;
 	while(local <= N){
+        
+        //printf("consumer %d while loop %d\n",id, local );
 		if(P(&full) == 0){
             printf("Consumer %d is waiting\n", id);
+            
         }else{
             
             // int consumed = buffer[out];
@@ -56,9 +63,10 @@ void consumer(int id){
             out = (out+1) % N;
             //yield();
         }
-		
+        //yield();
+		local++;
 		V(&empty);
-        local++;
+        
 	}
 	return;	
 }	
@@ -67,14 +75,12 @@ void consumer(int id){
 int main(){
 	
 	initQueue(&RunQ);
-	InitSem(&full, 0);
-	InitSem(&empty, 2);
+	
 
     int B, P, C, times, id;
     char commas[3];
     scanf("%d%c%d%c%d%c%d", &B, &commas[0], &P, &commas[1], &C, &commas[2], &times);
     int qSize = P+C;
-    
     int queue[qSize];
     for(int i = 0; i < qSize; i++){
         
@@ -89,13 +95,11 @@ int main(){
             // printf("threadstarted");
         }
     }
-
-    for(int h = 0; h < qSize; h++){
-        //printf("i == %d", h);
-        
-        
-    }
-	
+    printf("Runq: \n");
+    printQ(&RunQ);
+    InitSem(&full, 0);
+	InitSem(&empty, B);
+    
 	//printf("here\n");
 	run();
 	return 0;
